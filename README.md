@@ -6,7 +6,9 @@ ruTorrent - https://github.com/Novik/ruTorrent
 OpenVPN - https://openvpn.net/
 Privoxy - http://www.privoxy.org/
 
-Latest stable rTorrent release for Arch Linux, including OpenVPN to tunnel torrent traffic securely (using iptables to block any traffic not bound for tunnel). This now also includes Privoxy to allow unfiltered http|https traffic via VPN.
+Latest stable rTorrent release for Arch Linux with ruTorrent web front end, including OpenVPN to tunnel torrent traffic securely (using iptables to block any traffic not bound for tunnel). This now also includes Privoxy to allow unfiltered http|https traffic via VPN.
+
+Based on https://github.com/binhex/arch-delugevpn
 
 **Pull image**
 
@@ -38,7 +40,7 @@ Default is no authentication required
 
 **PIA user**
 
-PIA users will need to supply VPN_USER and VPN_PASS, optionally define VPN_REMOTE (list of gateways https://www.privateinternetaccess.com/pages/client-support/#signup) if you wish to use another remote gateway other than the Netherlands.
+PIA users will need to supply VPN_USER and VPN_PASS, optionally define VPN_REMOTE (list of gateways https://www.privateinternetaccess.com/pages/client-support/#signup) if you wish to use another remote gateway other than the Netherlands. You'll want to choose one that supports port forwarding.
 
 **Example**
 
