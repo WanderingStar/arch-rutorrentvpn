@@ -1,0 +1,39 @@
+upload_rate = 100
+download_rate = 300
+peer_exchange = yes
+dht = auto
+
+# Default session directory. Make sure you don't run multiple instance
+# of rtorrent using the same session directory. Perhaps using a
+# relative path?
+session = /data/downloading/rtorrent_session
+
+# Watch a directory for new torrents, restart torrents that have been
+# copied back and stop those that have been deleted.
+
+schedule = watch_directory,0,10,load_start=/data/watch/*.torrent
+schedule = tied_directory,10,10,start_tied=
+schedule = untied_directory,10,10,close_untied=
+
+# In progress
+directory = /data/downloading/
+
+# Move finished torrents to completed
+system.method.set_key = event.download.finished,rm_torrent,"execute=rm,$d.get_tied_to_file="
+system.method.set_key = event.download.finished,move_complete,"execute=mv,-u,$d.get_base_path=,/data/completed/ ;d.set_directory=/data/completed/"
+
+# allow rutorrent connection
+scgi_port = 127.0.0.1:5000
+
+# Enable the default ratio group.
+ratio.enable=
+# Change the limits, the defaults should be sufficient.
+# Upload to a minimum ratio of 1.0
+ratio.min.set=100
+# Upload to a maximum ratio of 20.0
+ratio.max.set=2000
+# Upload a minimum of 250 MB
+ratio.upload.set=250M
+
+# When seeding ratio is reached close the torrent
+system.method.set = group.seeding.ratio.command, d.close=

@@ -1,11 +1,11 @@
 FROM binhex/arch-openvpn
-MAINTAINER binhex
+MAINTAINER aneel
 
 # additional files
 ##################
 
 # add supervisor conf file for app
-ADD *.conf /etc/supervisor/conf.d/
+ADD rutorrent.conf /etc/supervisor/conf.d/
 
 # add bash scripts to install app, and setup iptables, routing etc
 ADD *.sh /root/
@@ -13,12 +13,21 @@ ADD *.sh /root/
 # add bash script to run deluge
 ADD apps/nobody/*.sh /home/nobody/
 
+# add rtorrent.rc in /home/nobody
+ADD rtorrent.rc /home/nobody/
+
+# add xmlrpc2scgi.py in /usr/bin
+ADD xmlrpc2scgi.py /usr/bin/
+
 # install app
 #############
 
 # make executable and run bash scripts to install app
 RUN chmod +x /root/*.sh /home/nobody/*.sh && \
 	/bin/bash /root/install.sh
+
+# replace default httpd.conf
+ADD httpd.conf /etc/httpd/conf/
 
 # docker settings
 #################
@@ -28,9 +37,6 @@ VOLUME /config
 
 # map /data to host defined data path (used to store data from app)
 VOLUME /data
-
-# expose port for deluge webui
-EXPOSE 8112
 
 # run supervisor
 ################

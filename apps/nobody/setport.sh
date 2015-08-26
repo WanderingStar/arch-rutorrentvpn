@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # wait for deluge daemon process to start (listen for port)
-while [[ $(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".58846"') == "" ]]; do
+while [[ $(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".5000"') == "" ]]; do
 	sleep 0.1
 done
 
@@ -28,9 +28,9 @@ else
 			PASSWORD=$(sed -n '2p' /config/openvpn/credentials.conf)
 
 			# lookup the currently set deluge incoming port
-			DELUGE_INCOMING_PORT=`/usr/bin/deluge-console -c /config "config listen_ports" | grep -P -o -m 1 '[\d]+(?=\,)'`
+			RTORRENT_INCOMING_PORT=`/usr/bin/xmlrpc2scgi.py scgi://127.0.0.1:5000 get_port_range | perl -ne 'print "$1\n" if m/<string>(\d+)</'`
 
-			echo "[info] Deluge incoming port $DELUGE_INCOMING_PORT"
+			echo "[info] rTorrent incoming port $RTORRENT_INCOMING_PORT"
 
 			# lookup the dynamic pia incoming port (response in json format)
 			PIA_INCOMING_PORT=`curl --connect-timeout 5 --max-time 20 --retry 5 --retry-delay 0 --retry-max-time 120 -s -d "user=$USERNAME&pass=$PASSWORD&client_id=$CLIENT_ID&local_ip=$LOCAL_IP" https://www.privateinternetaccess.com/vpninfo/port_forward_assignment | head -1 | grep -Po "[0-9]*"`
@@ -39,15 +39,12 @@ else
 
 			if [[ $PIA_INCOMING_PORT =~ ^-?[0-9]+$ ]]; then
 
-				if [[ $DELUGE_INCOMING_PORT != "$PIA_INCOMING_PORT" ]]; then
+				if [[ $RTORRENT_INCOMING_PORT != "$PIA_INCOMING_PORT" ]]; then
 				
-					echo "[info] Deluge incoming port $DELUGE_INCOMING_PORT and PIA incoming port $PIA_INCOMING_PORT different, configuring Deluge..."
-
-					# enable bind incoming port to specific port (disable random)
-					/usr/bin/deluge-console -c /config "config --set random_port False"
+					echo "[info] rTorrent incoming port $RTORRENT_INCOMING_PORT and PIA incoming port $PIA_INCOMING_PORT different, configuring rTorrent..."
 
 					# set incoming port
-					/usr/bin/deluge-console -c /config "config --set listen_ports ($PIA_INCOMING_PORT,$PIA_INCOMING_PORT)"
+					/usr/bin/xmlrpc2scgi.py scgi://127.0.0.1:5000 set_port_range $PIA_INCOMING_PORT
 
 				fi
 
