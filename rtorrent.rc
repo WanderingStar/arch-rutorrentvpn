@@ -37,3 +37,6 @@ ratio.upload.set=250M
 
 # When seeding ratio is reached close the torrent
 system.method.set = group.seeding.ratio.command, d.close=
+
+# Make downloads accessible by other users
+system.umask.set = 000
